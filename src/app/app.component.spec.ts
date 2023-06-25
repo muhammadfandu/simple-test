@@ -1,9 +1,16 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
+import { of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 describe('AppComponent', () => {
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+  let httpClient: jasmine.SpyObj<HttpClient>;
+
   beforeEach(async () => {
+    httpClient = jasmine.createSpyObj('HttpClient', ['get']);
     await TestBed.configureTestingModule({
       imports: [
         RouterTestingModule
@@ -11,25 +18,34 @@ describe('AppComponent', () => {
       declarations: [
         AppComponent
       ],
+      providers: [
+        { provide: HttpClient, useValue: httpClient, useClass: HttpClient },
+      ]
     }).compileComponents();
+
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+    expect(component).toBeTruthy();
   });
 
-  it(`should have as title 'angular-test'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('angular-test');
-  });
+  describe('getPokemonData', () => {
+    it('should show placeholder when pokemon name unavailable', async () => {
+      const mockData = { id: 1, name: 'bulbasaur' };
+      // arrange
+      component.getData = jasmine
+        .createSpy()
+        .and.returnValue(of({ mockData }));
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('angular-test app is running!');
+      // act
+      component.getData();
+
+      // assert
+      const fullName = component.getPokemonName(component.data);
+      expect(fullName).toEqual('UNAVAILABLE');
+    });
   });
 });
