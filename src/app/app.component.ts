@@ -39,7 +39,7 @@ export class AppComponent {
   }
 
   getPokemonName(pokemon: any) {
-    const name = pokemon.name;
+    const name = pokemon.name || 'unavailable';
     return name.toUpperCase();
   }
 }
