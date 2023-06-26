@@ -34,8 +34,12 @@ describe('AppComponent', () => {
 
   describe('getPokemonData', () => {
     it('should show placeholder when pokemon name unavailable', async () => {
-      const mockData = { id: 1, name: 'bulbasaur' };
       // arrange
+      const mockData = {
+        id: 1,
+        pokemon_name: 'bulbasaur',
+        pokemon_nickname: 'Leafal Weapon'
+      };
       component.getData = jasmine
         .createSpy()
         .and.returnValue(of({ mockData }));
@@ -44,8 +48,8 @@ describe('AppComponent', () => {
       component.getData();
 
       // assert
-      const fullName = component.getPokemonName(component.data);
-      expect(fullName).toEqual('UNAVAILABLE');
+      const pokemonName = component.getPokemonName(component.data);
+      expect(pokemonName).toEqual('UNAVAILABLE');
     });
   });
 });
